@@ -3,12 +3,24 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Auth Demo</title>
+  <title>Chat Demo</title>
   <link rel="stylesheet" href="/public/styles.css">
 </head>
 <body>
-  <main class="container">
-	{% block content %}
-	{% endblock %}
+  <header class="navbar">
+    <div class="brand">Mini Chat</div>
+    <div class="nav-meta">
+      <span id="session-email" class="session-email">Non connecte</span>
+      <button id="logout-button" class="ghost-button" type="button">Se deconnecter</button>
+    </div>
+  </header>
+
+  <main class="app-shell" data-api-base-url="{{ api_base_url }}">
+    {% block content %}
+    {% endblock %}
+  </main>
+
+  {% block scripts %}
+  {% endblock %}
 </body>
 </html>

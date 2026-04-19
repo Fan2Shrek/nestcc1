@@ -1,16 +1,18 @@
 {% extends 'index.html.twig' %}
 
 {% block content %}
-    <section class="panel">
-      <span class="tag">Nest + Twig</span>
-      <h1>Connexion et inscription</h1>
-      <p>Cette page appelle directement l'API Nest pour creer un compte et se connecter.</p>
-      <p style="margin-top: 10px;">Base URL API: <strong>{{ api_base_url }}</strong></p>
-    </section>
+  <section class="card intro-card">
+    <span class="tag">Nest + Twig</span>
+    <h1>Chat multi-salons</h1>
+    <p>Inscription, connexion, profil personnalisable, reactions emoji et indicateur d'ecriture en temps reel (WebSocket).</p>
+    <p class="muted-text">Base URL API: <strong>{{ api_base_url }}</strong></p>
+  </section>
 
-    <section class="forms">
+  <section class="card auth-card">
+    <h2>Authentification</h2>
+    <div class="auth-grid">
       <div class="form-card">
-        <h2>Inscription</h2>
+        <h3>Inscription</h3>
         <form id="register-form">
           <div class="field">
             <label for="register-email">Email</label>
@@ -20,12 +22,20 @@
             <label for="register-password">Mot de passe (8 caracteres min)</label>
             <input id="register-password" name="password" type="password" autocomplete="new-password" minlength="8" required>
           </div>
+          <div class="field">
+            <label for="register-username">Username</label>
+            <input id="register-username" name="username" type="text" minlength="3" maxlength="30" placeholder="Ton pseudo">
+          </div>
+          <div class="field">
+            <label for="register-color">Couleur d'affichage</label>
+            <input id="register-color" name="color" type="color" value="#e06c2f">
+          </div>
           <button type="submit">Creer mon compte</button>
         </form>
       </div>
 
       <div class="form-card">
-        <h2>Connexion</h2>
+        <h3>Connexion</h3>
         <form id="login-form">
           <div class="field">
             <label for="login-email">Email</label>
@@ -39,10 +49,86 @@
         </form>
       </div>
 
-      <div id="status" class="status"></div>
-      <pre id="result" class="result">Aucune action effectuee.</pre>
-    </section>
-  </main>
+      <div class="form-card">
+        <h3>Mon profil</h3>
+        <form id="profile-form">
+          <div class="field">
+            <label for="profile-username">Username</label>
+            <input id="profile-username" name="username" type="text" minlength="3" maxlength="30" required>
+          </div>
+          <div class="field">
+            <label for="profile-color">Couleur</label>
+            <input id="profile-color" name="color" type="color" value="#e06c2f" required>
+          </div>
+          <button type="submit">Mettre a jour le profil</button>
+        </form>
+      </div>
+    </div>
+  </section>
 
-<script src="/public/scripts.js"></script>
+  <section class="card chat-card">
+    <h2>Chat</h2>
+    <div class="chat-layout">
+      <aside class="chat-sidebar">
+        <h3>Creer un salon</h3>
+        <form id="create-room-form" class="stacked-form">
+          <div class="field">
+            <label for="room-name">Nom du salon</label>
+            <input id="room-name" name="name" type="text" maxlength="120" required>
+          </div>
+          <div class="field">
+            <label for="invite-email">Email a inviter (optionnel)</label>
+            <input id="invite-email" name="inviteEmail" type="email" autocomplete="email">
+          </div>
+          <label class="checkbox-line" for="invite-history">
+            <input id="invite-history" name="canAccessHistory" type="checkbox">
+            Donner acces a l'historique
+          </label>
+          <button type="submit">Creer le salon</button>
+        </form>
+
+        <h3>Inviter dans le salon selectionne</h3>
+        <form id="invite-form" class="stacked-form">
+          <div class="field">
+            <label for="invite-target-email">Email utilisateur</label>
+            <input id="invite-target-email" name="email" type="email" autocomplete="email" required>
+          </div>
+          <label class="checkbox-line" for="invite-target-history">
+            <input id="invite-target-history" name="canAccessHistory" type="checkbox">
+            Autoriser l'historique
+          </label>
+          <button type="submit">Inviter</button>
+        </form>
+
+        <h3>Mes salons</h3>
+        <button id="refresh-rooms" type="button" class="ghost-button full-width">Rafraichir la liste</button>
+        <ul id="rooms-list" class="rooms-list"></ul>
+      </aside>
+
+      <div class="chat-main">
+        <div class="chat-head">
+          <h3 id="active-room-name">Aucun salon selectionne</h3>
+          <p id="active-room-meta" class="muted-text">Selectionne un salon pour lire et envoyer des messages.</p>
+          <p id="typing-indicator" class="typing-indicator muted-text"></p>
+        </div>
+
+        <div id="messages-list" class="messages-list"></div>
+
+        <form id="message-form" class="message-form">
+          <input id="message-content" name="content" type="text" maxlength="2000" placeholder="Ton message..." required>
+          <button type="submit">Envoyer</button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <section class="card logs-card">
+    <div id="status" class="status">Pret.</div>
+    <pre id="result" class="result">Aucune action effectuee.</pre>
+  </section>
+{% endblock %}
+
+{% block scripts %}
+  <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
+  <script src="/public/scripts.js"></script>
 {% endblock %}
