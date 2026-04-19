@@ -1,0 +1,17 @@
+services:
+  front:
+    build:
+      context: ./front
+    volumes:
+      - ./front:/var/www/html
+    ports:
+      - "8000:80"
+
+  api:
+    image: node:18
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./api:/app
+    working_dir: /app
+    command: ["npm", "run", "start:dev"]
