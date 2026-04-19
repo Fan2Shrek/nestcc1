@@ -1,0 +1,48 @@
+{% extends 'index.html.twig' %}
+
+{% block content %}
+    <section class="panel">
+      <span class="tag">Nest + Twig</span>
+      <h1>Connexion et inscription</h1>
+      <p>Cette page appelle directement l'API Nest pour creer un compte et se connecter.</p>
+      <p style="margin-top: 10px;">Base URL API: <strong>{{ api_base_url }}</strong></p>
+    </section>
+
+    <section class="forms">
+      <div class="form-card">
+        <h2>Inscription</h2>
+        <form id="register-form">
+          <div class="field">
+            <label for="register-email">Email</label>
+            <input id="register-email" name="email" type="email" autocomplete="email" required>
+          </div>
+          <div class="field">
+            <label for="register-password">Mot de passe (8 caracteres min)</label>
+            <input id="register-password" name="password" type="password" autocomplete="new-password" minlength="8" required>
+          </div>
+          <button type="submit">Creer mon compte</button>
+        </form>
+      </div>
+
+      <div class="form-card">
+        <h2>Connexion</h2>
+        <form id="login-form">
+          <div class="field">
+            <label for="login-email">Email</label>
+            <input id="login-email" name="email" type="email" autocomplete="email" required>
+          </div>
+          <div class="field">
+            <label for="login-password">Mot de passe</label>
+            <input id="login-password" name="password" type="password" autocomplete="current-password" required>
+          </div>
+          <button type="submit">Se connecter</button>
+        </form>
+      </div>
+
+      <div id="status" class="status"></div>
+      <pre id="result" class="result">Aucune action effectuee.</pre>
+    </section>
+  </main>
+
+<script src="/public/scripts.js"></script>
+{% endblock %}
