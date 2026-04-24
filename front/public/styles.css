@@ -21,7 +21,10 @@ body {
   min-height: 100vh;
   font-family: "Trebuchet MS", "Segoe UI", sans-serif;
   color: var(--text);
-  background: radial-gradient(circle at 15% 20%, #ffe3c7 0 22%, transparent 40%), radial-gradient(circle at 85% 10%, #d8ead9 0 16%, transparent 35%), linear-gradient(145deg, var(--bg-1), var(--bg-2));
+  background:
+	radial-gradient(circle at 15% 20%, #ffe3c7 0 22%, transparent 40%),
+	radial-gradient(circle at 85% 10%, #d8ead9 0 16%, transparent 35%),
+	linear-gradient(145deg, var(--bg-1), var(--bg-2));
   padding: 24px 18px 30px;
 }
 
@@ -152,8 +155,8 @@ input:focus {
 }
 
 input[type="color"] {
-  width: 35px;
-  height: 35px;
+  width: 60px;
+  height: 42px;
   padding: 2px;
   cursor: pointer;
   border: 1px solid var(--border);
@@ -373,27 +376,78 @@ button:disabled {
   color: var(--ok);
 }
 
+.toast-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 9999;
+  max-width: 400px;
+}
+
+.toast {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 14px 16px;
+  margin-bottom: 10px;
+  box-shadow: var(--shadow);
+  font-size: 0.95rem;
+  animation: slide-in 0.3s ease;
+}
+
+.toast.success {
+  border-left: 4px solid var(--ok);
+  color: var(--text);
+}
+
+.toast.error {
+  border-left: 4px solid var(--danger);
+  color: var(--text);
+}
+
+@keyframes slide-in {
+  from {
+    transform: translateX(400px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slide-out {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(400px);
+    opacity: 0;
+  }
+}
+
 @media (max-width: 980px) {
   .chat-layout {
-    grid-template-columns: 1fr;
+	grid-template-columns: 1fr;
   }
 }
 
 @media (max-width: 840px) {
   .auth-grid {
-    grid-template-columns: 1fr;
+	grid-template-columns: 1fr;
   }
 
   .navbar {
-    flex-wrap: wrap;
-    gap: 8px;
+	flex-wrap: wrap;
+	gap: 8px;
   }
 
   .card {
-    padding: 14px;
+	padding: 14px;
   }
 
   .message-form {
-    grid-template-columns: 1fr;
+	grid-template-columns: 1fr;
   }
 }

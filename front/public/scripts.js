@@ -40,20 +40,52 @@ function setStatus(message, isError = false) {
   statusEl.className = `status ${isError ? "error" : "success"}`;
 }
 
+function showToast(message, isError = false) {
+  // Create container if it doesn't exist
+  let container = document.querySelector(".toast-container");
+  if (!container) {
+    container = document.createElement("div");
+    container.className = "toast-container";
+    document.body.appendChild(container);
+  }
+
+  // Create toast element
+  const toast = document.createElement("div");
+  toast.className = `toast ${isError ? "error" : "success"}`;
+  toast.textContent = message;
+  container.appendChild(toast);
+
+  // Auto-dismiss after 4 seconds
+  setTimeout(() => {
+    toast.style.animation = "slide-out 0.3s ease";
+    setTimeout(() => {
+      toast.remove();
+      // Remove container if empty
+      if (container.children.length === 0) {
+        container.remove();
+      }
+    }, 300);
+  }, 4000);
+}
+
 function setResult(data) {
-  resultEl.textContent = typeof data === "string" ? data : JSON.stringify(data, null, 2);
+  resultEl.textContent =
+    typeof data === "string" ? data : JSON.stringify(data, null, 2);
 }
 
 function setDisconnectedChatState() {
   activeRoomNameEl.textContent = "Aucun salon selectionne";
-  activeRoomMetaEl.textContent = "Selectionne un salon pour lire et envoyer des messages.";
+  activeRoomMetaEl.textContent =
+    "Selectionne un salon pour lire et envoyer des messages.";
   typingIndicatorEl.textContent = "";
   messagesListEl.innerHTML = "";
 }
 
 function updateSessionUi() {
   const isConnected = Boolean(state.token && state.user);
-  sessionEmailEl.textContent = isConnected ? `${state.user.username} (${state.user.email})` : "Non connecte";
+  sessionEmailEl.textContent = isConnected
+    ? `${state.user.username} (${state.user.email})`
+    : "Non connecte";
   sessionEmailEl.style.color = isConnected ? state.user.color : "#616161";
 
   logoutButton.disabled = !isConnected;
@@ -135,7 +167,9 @@ function setTypingIndicator(roomId, typingState) {
     return;
   }
 
-  const users = (typingState?.users || []).filter((entry) => entry.id !== state.user?.id);
+  const users = (typingState?.users || []).filter(
+    (entry) => entry.id !== state.user?.id,
+  );
 
   if (!users.length) {
     typingIndicatorEl.textContent = "";
@@ -147,7 +181,9 @@ function setTypingIndicator(roomId, typingState) {
     return;
   }
 
-  typingIndicatorEl.textContent = `${users.map((entry) => entry.username).join(", ")} sont en train d'ecrire...`;
+  typingIndicatorEl.textContent = `${users
+    .map((entry) => entry.username)
+    .join(", ")} sont en train d'ecrire...`;
 }
 
 function renderRooms() {
@@ -156,7 +192,9 @@ function renderRooms() {
   if (!state.rooms.length) {
     const emptyItem = document.createElement("li");
     emptyItem.className = "room-item muted-item";
-    emptyItem.textContent = state.token ? "Aucun salon. Cree le premier." : "Connecte-toi pour voir tes salons.";
+    emptyItem.textContent = state.token
+      ? "Aucun salon. Cree le premier."
+      : "Connecte-toi pour voir tes salons.";
     roomsListEl.appendChild(emptyItem);
     return;
   }
@@ -275,13 +313,22 @@ function renderMessages() {
     reactionLine.className = "reaction-line";
 
     for (const reaction of message.reactions || []) {
-      reactionLine.appendChild(createReactionButton(room.id, message.id, reaction.emoji, reaction.users));
+      reactionLine.appendChild(
+        createReactionButton(
+          room.id,
+          message.id,
+          reaction.emoji,
+          reaction.users,
+        ),
+      );
     }
 
     const quickLine = document.createElement("div");
     quickLine.className = "reaction-quick-line";
     for (const emoji of REACTION_OPTIONS) {
-      quickLine.appendChild(createQuickReactionButton(room.id, message.id, emoji));
+      quickLine.appendChild(
+        createQuickReactionButton(room.id, message.id, emoji),
+      );
     }
 
     card.appendChild(head);
@@ -315,7 +362,9 @@ function applyMessageUpdate(roomId, message) {
     state.messagesByRoomId[roomId] = [];
   }
 
-  const existingIndex = state.messagesByRoomId[roomId].findIndex((entry) => entry.id === message.id);
+  const existingIndex = state.messagesByRoomId[roomId].findIndex(
+    (entry) => entry.id === message.id,
+  );
 
   if (existingIndex === -1) {
     state.messagesByRoomId[roomId].push(message);
@@ -419,7 +468,11 @@ function connectSocket() {
     const previousActiveRoom = state.activeRoomId;
     replaceRooms(rooms);
 
-    if (state.activeRoomId && previousActiveRoom && state.activeRoomId === previousActiveRoom) {
+    if (
+      state.activeRoomId &&
+      previousActiveRoom &&
+      state.activeRoomId === previousActiveRoom
+    ) {
       return;
     }
 
@@ -474,7 +527,6 @@ function connectSocket() {
 
 registerForm.addEventListener("submit", async (event) => {
   event.preventDefault();
-  setStatus("Creation du compte en cours...");
 
   const formData = new FormData(registerForm);
   const payload = {
@@ -489,17 +541,16 @@ registerForm.addEventListener("submit", async (event) => {
       method: "POST",
       body: JSON.stringify(payload),
     });
-    setStatus("Compte cree avec succes.");
+    showToast("Compte cree avec succes.");
     setResult(result);
     registerForm.reset();
   } catch (error) {
-    setStatus(error.message, true);
+    showToast(error.message, true);
   }
 });
 
 loginForm.addEventListener("submit", async (event) => {
   event.preventDefault();
-  setStatus("Connexion en cours...");
 
   const formData = new FormData(loginForm);
   const payload = {
@@ -525,10 +576,10 @@ loginForm.addEventListener("submit", async (event) => {
     updateSessionUi();
     connectSocket();
     setResult(result);
-    setStatus("Connexion reussie.");
+    showToast("Connexion reussie.");
     loginForm.reset();
   } catch (error) {
-    setStatus(error.message, true);
+    showToast(error.message, true);
   }
 });
 
@@ -740,7 +791,7 @@ logoutButton.addEventListener("click", async () => {
   renderRooms();
   setDisconnectedChatState();
   updateSessionUi();
-  setStatus("Deconnecte.");
+  showToast("Deconnecte.");
   setResult("Aucune action effectuee.");
 });
 

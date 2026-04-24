@@ -55,7 +55,7 @@ export class AuthService {
     this.validatePassword(password);
 
     if (this.usersByEmail.has(normalizedEmail)) {
-      throw new BadRequestException('Email already exists');
+      throw new BadRequestException('Cet email existe déjà');
     }
 
     const username = this.validateUsername(
@@ -86,7 +86,7 @@ export class AuthService {
     const user = this.usersByEmail.get(normalizedEmail);
 
     if (!user) {
-      throw new UnauthorizedException('Invalid email or password');
+      throw new UnauthorizedException('Email ou mot de passe invalide');
     }
 
     const isPasswordValid = await this.verifyPassword(
@@ -95,7 +95,7 @@ export class AuthService {
     );
 
     if (!isPasswordValid) {
-      throw new UnauthorizedException('Invalid email or password');
+      throw new UnauthorizedException('Email ou mot de passe invalide');
     }
 
     return this.buildAuthResponse(user);
@@ -106,7 +106,7 @@ export class AuthService {
     const user = this.usersById.get(actor.id);
 
     if (!user) {
-      throw new UnauthorizedException('Invalid token');
+      throw new UnauthorizedException('Jeton invalide');
     }
 
     if (payload.username !== undefined) {
@@ -122,19 +122,19 @@ export class AuthService {
 
   getUserByToken(token: string): AuthUser {
     if (!token) {
-      throw new UnauthorizedException('Missing token');
+      throw new UnauthorizedException('Jeton manquant');
     }
 
     const userId = this.userIdByToken.get(token);
 
     if (!userId) {
-      throw new UnauthorizedException('Invalid token');
+      throw new UnauthorizedException('Jeton invalide');
     }
 
     const user = this.usersById.get(userId);
 
     if (!user) {
-      throw new UnauthorizedException('Invalid token');
+      throw new UnauthorizedException('Jeton invalide');
     }
 
     return this.toAuthUser(user);
@@ -179,7 +179,7 @@ export class AuthService {
     const email = rawEmail?.trim().toLowerCase();
 
     if (!email || !this.isValidEmail(email)) {
-      throw new BadRequestException('A valid email is required');
+      throw new BadRequestException('Un email valide est requis');
     }
 
     return email;
@@ -188,7 +188,7 @@ export class AuthService {
   private validatePassword(password: string): void {
     if (!password || password.length < 8) {
       throw new BadRequestException(
-        'Password must be at least 8 characters long',
+        'Le mot de passe doit contenir au moins 8 caractères',
       );
     }
   }
@@ -197,12 +197,12 @@ export class AuthService {
     const normalizedUsername = username?.trim();
 
     if (!normalizedUsername) {
-      throw new BadRequestException('Username is required');
+      throw new BadRequestException("Le nom d'utilisateur est requis");
     }
 
     if (normalizedUsername.length < 3 || normalizedUsername.length > 30) {
       throw new BadRequestException(
-        'Username must be between 3 and 30 characters',
+        "Le nom d'utilisateur doit contenir entre 3 et 30 caractères",
       );
     }
 
@@ -213,12 +213,12 @@ export class AuthService {
     const normalizedColor = color?.trim().toLowerCase();
 
     if (!normalizedColor) {
-      throw new BadRequestException('Color is required');
+      throw new BadRequestException('La couleur est requise');
     }
 
     if (!/^#[0-9a-f]{6}$/.test(normalizedColor)) {
       throw new BadRequestException(
-        'Color must be a valid hex value (#rrggbb)',
+        'La couleur doit être une valeur hex valide (#rrggbb)',
       );
     }
 
