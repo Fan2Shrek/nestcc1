@@ -153,7 +153,11 @@ export class ChatService {
     return [...room.members.keys()];
   }
 
-  inviteUser(token: string, roomId: string, invitee: RoomInviteDto): RoomResponse {
+  inviteUser(
+    token: string,
+    roomId: string,
+    invitee: RoomInviteDto,
+  ): RoomResponse {
     const actor = this.authService.getUserByToken(token);
     this.ensureGeneralRoomForUser(actor.id);
 
@@ -171,7 +175,11 @@ export class ChatService {
     return this.toRoomResponse(room);
   }
 
-  sendMessage(token: string, roomId: string, content: string): ChatMessageResponse {
+  sendMessage(
+    token: string,
+    roomId: string,
+    content: string,
+  ): ChatMessageResponse {
     const actor = this.authService.getUserByToken(token);
     this.ensureGeneralRoomForUser(actor.id);
 
@@ -203,7 +211,9 @@ export class ChatService {
 
     const visibleMessages = membership.canAccessHistory
       ? room.messages
-      : room.messages.filter((message) => message.createdAt >= membership.joinedAt);
+      : room.messages.filter(
+          (message) => message.createdAt >= membership.joinedAt,
+        );
 
     return visibleMessages.map((message) => this.toMessageResponse(message));
   }
@@ -306,7 +316,9 @@ export class ChatService {
     }
 
     if (normalizedName.length > 120) {
-      throw new BadRequestException('Room name must be 120 characters or fewer');
+      throw new BadRequestException(
+        'Room name must be 120 characters or fewer',
+      );
     }
 
     return normalizedName;

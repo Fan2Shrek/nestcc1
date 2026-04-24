@@ -61,7 +61,9 @@ export class AuthService {
     const username = this.validateUsername(
       payload.username ?? this.defaultUsernameFromEmail(normalizedEmail),
     );
-    const color = this.validateColor(payload.color ?? this.defaultColorFromId(normalizedEmail));
+    const color = this.validateColor(
+      payload.color ?? this.defaultColorFromId(normalizedEmail),
+    );
 
     const user: UserRecord = {
       id: randomUUID(),
@@ -185,7 +187,9 @@ export class AuthService {
 
   private validatePassword(password: string): void {
     if (!password || password.length < 8) {
-      throw new BadRequestException('Password must be at least 8 characters long');
+      throw new BadRequestException(
+        'Password must be at least 8 characters long',
+      );
     }
   }
 
@@ -197,7 +201,9 @@ export class AuthService {
     }
 
     if (normalizedUsername.length < 3 || normalizedUsername.length > 30) {
-      throw new BadRequestException('Username must be between 3 and 30 characters');
+      throw new BadRequestException(
+        'Username must be between 3 and 30 characters',
+      );
     }
 
     return normalizedUsername;
@@ -211,7 +217,9 @@ export class AuthService {
     }
 
     if (!/^#[0-9a-f]{6}$/.test(normalizedColor)) {
-      throw new BadRequestException('Color must be a valid hex value (#rrggbb)');
+      throw new BadRequestException(
+        'Color must be a valid hex value (#rrggbb)',
+      );
     }
 
     return normalizedColor;
@@ -232,7 +240,8 @@ export class AuthService {
     const red = (hash & 0xff0000) >> 16;
     const green = (hash & 0x00ff00) >> 8;
     const blue = hash & 0x0000ff;
-    const clamp = (value: number) => Math.max(70, Math.min(220, Math.abs(value)));
+    const clamp = (value: number) =>
+      Math.max(70, Math.min(220, Math.abs(value)));
 
     return `#${clamp(red).toString(16).padStart(2, '0')}${clamp(green)
       .toString(16)

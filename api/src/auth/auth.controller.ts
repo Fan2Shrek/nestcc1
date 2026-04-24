@@ -22,7 +22,9 @@ export class AuthController {
 
   @Get('me')
   getProfile(@Headers('authorization') authorization: string | undefined) {
-    return this.authService.getUserByToken(this.extractBearerToken(authorization));
+    return this.authService.getUserByToken(
+      this.extractBearerToken(authorization),
+    );
   }
 
   @Patch('me')

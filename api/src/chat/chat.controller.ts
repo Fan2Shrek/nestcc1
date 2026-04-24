@@ -15,7 +15,10 @@ export class ChatController {
     @Headers('authorization') authorization: string | undefined,
     @Body() payload: CreateRoomDto,
   ) {
-    return this.chatService.createRoom(this.extractBearerToken(authorization), payload);
+    return this.chatService.createRoom(
+      this.extractBearerToken(authorization),
+      payload,
+    );
   }
 
   @Get('rooms')
@@ -54,7 +57,10 @@ export class ChatController {
     @Headers('authorization') authorization: string | undefined,
     @Param('roomId') roomId: string,
   ) {
-    return this.chatService.getMessages(this.extractBearerToken(authorization), roomId);
+    return this.chatService.getMessages(
+      this.extractBearerToken(authorization),
+      roomId,
+    );
   }
 
   @Post('rooms/:roomId/typing')
@@ -75,7 +81,10 @@ export class ChatController {
     @Headers('authorization') authorization: string | undefined,
     @Param('roomId') roomId: string,
   ) {
-    return this.chatService.getTyping(this.extractBearerToken(authorization), roomId);
+    return this.chatService.getTyping(
+      this.extractBearerToken(authorization),
+      roomId,
+    );
   }
 
   @Post('rooms/:roomId/messages/:messageId/reactions')

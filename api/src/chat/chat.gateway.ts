@@ -44,8 +44,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       const token = this.extractToken(client);
       const user = this.authService.getUserByToken(token);
 
-      client.data.token = token;
-      client.data.userId = user.id;
+      (client.data as { token: string }).token = token;
+      (client.data as { userId: string }).userId = user.id;
 
       this.registerSocket(user.id, client.id);
 
@@ -73,7 +73,9 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @SubscribeMessage('rooms:list')
   listRooms(@ConnectedSocket() client: Socket): WsAck<unknown> {
-    return this.execute(client, () => this.chatService.listRooms(this.getToken(client)));
+    return this.execute(client, () =>
+      this.chatService.listRooms(this.getToken(client)),
+    );
   }
 
   @SubscribeMessage('room:create')
@@ -112,7 +114,10 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   ): WsAck<unknown> {
     return this.execute(client, () => {
       client.join(payload.roomId);
-      return this.chatService.getMessages(this.getToken(client), payload.roomId);
+      return this.chatService.getMessages(
+        this.getToken(client),
+        payload.roomId,
+      );
     });
   }
 
@@ -133,7 +138,10 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         message,
       });
 
-      const typing = this.chatService.getTyping(this.getToken(client), payload.roomId);
+      const typing = this.chatService.getTyping(
+        this.getToken(client),
+        payload.roomId,
+      );
       this.server.to(payload.roomId).emit('typing:updated', typing);
 
       return message;
@@ -256,11 +264,11 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   private getToken(client: Socket): string {
-    return String(client.data.token || '');
+    return String((client.data as { token?: string }).token || '');
   }
 
   private extractToken(client: Socket): string {
-    const tokenFromAuth = client.handshake.auth?.token;
+    const tokenFromAuth = (client.handshake.auth as { token?: string })?.token;
 
     if (typeof tokenFromAuth === 'string' && tokenFromAuth.trim()) {
       return tokenFromAuth.trim();

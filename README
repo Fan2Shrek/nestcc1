@@ -1,0 +1,33 @@
+# Projet NestJS + Twig
+
+Nécessite
+
+- Docker + Docker Compose
+- npm
+- composer
+
+## Installer les dépendances
+
+```bash
+cd api
+npm install
+cd ../front
+composer install
+```
+
+## Lancer le projet
+
+```bash
+docker compose up -d
+```
+
+## Accès
+
+http://localhost:8000 frontend
+http://localhost:3000 backend
+
+## Arrêter le projet
+
+```bash
+docker compose down
+```
