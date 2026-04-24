@@ -25,8 +25,8 @@ const profileUsernameInput = document.getElementById("profile-username");
 const profileColorInput = document.getElementById("profile-color");
 
 const state = {
-  token: "",
-  user: null,
+  token: localStorage.getItem("authToken") || "",
+  user: localStorage.getItem("authUser") ? JSON.parse(localStorage.getItem("authUser")) : null,
   socket: null,
   rooms: [],
   messagesByRoomId: {},
@@ -41,23 +41,19 @@ function setStatus(message, isError = false) {
 }
 
 function setResult(data) {
-  resultEl.textContent =
-    typeof data === "string" ? data : JSON.stringify(data, null, 2);
+  resultEl.textContent = typeof data === "string" ? data : JSON.stringify(data, null, 2);
 }
 
 function setDisconnectedChatState() {
   activeRoomNameEl.textContent = "Aucun salon selectionne";
-  activeRoomMetaEl.textContent =
-    "Selectionne un salon pour lire et envoyer des messages.";
+  activeRoomMetaEl.textContent = "Selectionne un salon pour lire et envoyer des messages.";
   typingIndicatorEl.textContent = "";
   messagesListEl.innerHTML = "";
 }
 
 function updateSessionUi() {
   const isConnected = Boolean(state.token && state.user);
-  sessionEmailEl.textContent = isConnected
-    ? `${state.user.username} (${state.user.email})`
-    : "Non connecte";
+  sessionEmailEl.textContent = isConnected ? `${state.user.username} (${state.user.email})` : "Non connecte";
   sessionEmailEl.style.color = isConnected ? state.user.color : "#616161";
 
   logoutButton.disabled = !isConnected;
@@ -139,9 +135,7 @@ function setTypingIndicator(roomId, typingState) {
     return;
   }
 
-  const users = (typingState?.users || []).filter(
-    (entry) => entry.id !== state.user?.id,
-  );
+  const users = (typingState?.users || []).filter((entry) => entry.id !== state.user?.id);
 
   if (!users.length) {
     typingIndicatorEl.textContent = "";
@@ -153,9 +147,7 @@ function setTypingIndicator(roomId, typingState) {
     return;
   }
 
-  typingIndicatorEl.textContent = `${users
-    .map((entry) => entry.username)
-    .join(", ")} sont en train d'ecrire...`;
+  typingIndicatorEl.textContent = `${users.map((entry) => entry.username).join(", ")} sont en train d'ecrire...`;
 }
 
 function renderRooms() {
@@ -164,9 +156,7 @@ function renderRooms() {
   if (!state.rooms.length) {
     const emptyItem = document.createElement("li");
     emptyItem.className = "room-item muted-item";
-    emptyItem.textContent = state.token
-      ? "Aucun salon. Cree le premier."
-      : "Connecte-toi pour voir tes salons.";
+    emptyItem.textContent = state.token ? "Aucun salon. Cree le premier." : "Connecte-toi pour voir tes salons.";
     roomsListEl.appendChild(emptyItem);
     return;
   }
@@ -285,22 +275,13 @@ function renderMessages() {
     reactionLine.className = "reaction-line";
 
     for (const reaction of message.reactions || []) {
-      reactionLine.appendChild(
-        createReactionButton(
-          room.id,
-          message.id,
-          reaction.emoji,
-          reaction.users,
-        ),
-      );
+      reactionLine.appendChild(createReactionButton(room.id, message.id, reaction.emoji, reaction.users));
     }
 
     const quickLine = document.createElement("div");
     quickLine.className = "reaction-quick-line";
     for (const emoji of REACTION_OPTIONS) {
-      quickLine.appendChild(
-        createQuickReactionButton(room.id, message.id, emoji),
-      );
+      quickLine.appendChild(createQuickReactionButton(room.id, message.id, emoji));
     }
 
     card.appendChild(head);
@@ -334,9 +315,7 @@ function applyMessageUpdate(roomId, message) {
     state.messagesByRoomId[roomId] = [];
   }
 
-  const existingIndex = state.messagesByRoomId[roomId].findIndex(
-    (entry) => entry.id === message.id,
-  );
+  const existingIndex = state.messagesByRoomId[roomId].findIndex((entry) => entry.id === message.id);
 
   if (existingIndex === -1) {
     state.messagesByRoomId[roomId].push(message);
@@ -440,11 +419,7 @@ function connectSocket() {
     const previousActiveRoom = state.activeRoomId;
     replaceRooms(rooms);
 
-    if (
-      state.activeRoomId &&
-      previousActiveRoom &&
-      state.activeRoomId === previousActiveRoom
-    ) {
+    if (state.activeRoomId && previousActiveRoom && state.activeRoomId === previousActiveRoom) {
       return;
     }
 
@@ -540,6 +515,8 @@ loginForm.addEventListener("submit", async (event) => {
 
     state.token = result.token;
     state.user = result.user;
+    localStorage.setItem("authToken", result.token);
+    localStorage.setItem("authUser", JSON.stringify(result.user));
     profileUsernameInput.value = result.user.username;
     profileColorInput.value = result.user.color;
     state.messagesByRoomId = {};
@@ -576,6 +553,7 @@ profileForm.addEventListener("submit", async (event) => {
     });
 
     state.user = profile;
+    localStorage.setItem("authUser", JSON.stringify(profile));
     updateSessionUi();
     renderMessages();
     setResult(profile);
@@ -753,6 +731,8 @@ logoutButton.addEventListener("click", async () => {
   state.messagesByRoomId = {};
   state.typingByRoomId = {};
   state.activeRoomId = "";
+  localStorage.removeItem("authToken");
+  localStorage.removeItem("authUser");
 
   profileUsernameInput.value = "";
   profileColorInput.value = "#e06c2f";
@@ -767,3 +747,9 @@ logoutButton.addEventListener("click", async () => {
 updateSessionUi();
 renderRooms();
 setDisconnectedChatState();
+
+if (state.token && state.user) {
+  profileUsernameInput.value = state.user.username;
+  profileColorInput.value = state.user.color;
+  connectSocket();
+}
