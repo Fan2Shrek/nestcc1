@@ -26,7 +26,9 @@ const profileColorInput = document.getElementById("profile-color");
 
 const state = {
   token: localStorage.getItem("authToken") || "",
-  user: localStorage.getItem("authUser") ? JSON.parse(localStorage.getItem("authUser")) : null,
+  user: localStorage.getItem("authUser")
+    ? JSON.parse(localStorage.getItem("authUser"))
+    : null,
   socket: null,
   rooms: [],
   messagesByRoomId: {},
@@ -41,7 +43,6 @@ function setStatus(message, isError = false) {
 }
 
 function showToast(message, isError = false) {
-  // Create container if it doesn't exist
   let container = document.querySelector(".toast-container");
   if (!container) {
     container = document.createElement("div");
@@ -49,18 +50,15 @@ function showToast(message, isError = false) {
     document.body.appendChild(container);
   }
 
-  // Create toast element
   const toast = document.createElement("div");
   toast.className = `toast ${isError ? "error" : "success"}`;
   toast.textContent = message;
   container.appendChild(toast);
 
-  // Auto-dismiss after 4 seconds
   setTimeout(() => {
     toast.style.animation = "slide-out 0.3s ease";
     setTimeout(() => {
       toast.remove();
-      // Remove container if empty
       if (container.children.length === 0) {
         container.remove();
       }
@@ -443,7 +441,7 @@ function connectSocket() {
   });
 
   state.socket.on("connect", async () => {
-    setStatus("Connecte au chat temps reel.");
+    setStatus("Connecté au chat temps réel.");
     try {
       await fetchRoomsViaSocket(state.activeRoomId);
     } catch (error) {
@@ -609,8 +607,9 @@ profileForm.addEventListener("submit", async (event) => {
     renderMessages();
     setResult(profile);
     setStatus("Profil mis a jour.");
+    showToast("Profil mis a jour.");
   } catch (error) {
-    setStatus(error.message, true);
+    showToast(error.message, true);
   }
 });
 
@@ -698,7 +697,7 @@ messageForm.addEventListener("submit", async (event) => {
     });
 
     setResult(message);
-    setStatus("Message envoye.");
+    setStatus("Message envoyé.");
     messageForm.reset();
 
     await socketCall("typing:set", {
@@ -723,9 +722,7 @@ messageInput.addEventListener("input", async () => {
       roomId: state.activeRoomId,
       typing: { isTyping: true },
     });
-  } catch {
-    // Ignore typing errors during input.
-  }
+  } catch {}
 
   if (state.typingDebounceTimer) {
     window.clearTimeout(state.typingDebounceTimer);
@@ -737,9 +734,7 @@ messageInput.addEventListener("input", async () => {
         roomId: state.activeRoomId,
         typing: { isTyping: false },
       });
-    } catch {
-      // Ignore debounce errors.
-    }
+    } catch {}
   }, 1200);
 });
 
@@ -764,9 +759,7 @@ logoutButton.addEventListener("click", async () => {
         roomId: state.activeRoomId,
         typing: { isTyping: false },
       });
-    } catch {
-      // Continue logout even if typing reset fails.
-    }
+    } catch {}
   }
 
   if (state.typingDebounceTimer) {
@@ -791,8 +784,8 @@ logoutButton.addEventListener("click", async () => {
   renderRooms();
   setDisconnectedChatState();
   updateSessionUi();
-  showToast("Deconnecte.");
-  setResult("Aucune action effectuee.");
+  showToast("Déconnecté.");
+  setResult("Aucune action effectuée.");
 });
 
 updateSessionUi();
