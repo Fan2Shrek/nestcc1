@@ -539,7 +539,7 @@ registerForm.addEventListener("submit", async (event) => {
       method: "POST",
       body: JSON.stringify(payload),
     });
-    showToast("Compte cree avec succes.");
+    showToast("Compte créé avec succès.");
     setResult(result);
     registerForm.reset();
   } catch (error) {
@@ -574,7 +574,7 @@ loginForm.addEventListener("submit", async (event) => {
     updateSessionUi();
     connectSocket();
     setResult(result);
-    showToast("Connexion reussie.");
+    showToast("Connexion réussie.");
     loginForm.reset();
   } catch (error) {
     showToast(error.message, true);
@@ -606,8 +606,8 @@ profileForm.addEventListener("submit", async (event) => {
     updateSessionUi();
     renderMessages();
     setResult(profile);
-    setStatus("Profil mis a jour.");
-    showToast("Profil mis a jour.");
+    setStatus("Profil mis à jour.");
+    showToast("Profil mis à jour.");
   } catch (error) {
     showToast(error.message, true);
   }
@@ -638,7 +638,7 @@ createRoomForm.addEventListener("submit", async (event) => {
   try {
     const room = await socketCall("room:create", payload);
     setResult(room);
-    setStatus("Salon cree.");
+    setStatus("Salon créé.");
     createRoomForm.reset();
     await fetchRoomsViaSocket(room.id);
   } catch (error) {
