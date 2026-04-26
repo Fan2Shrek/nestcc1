@@ -72,9 +72,9 @@ function setResult(data) {
 }
 
 function setDisconnectedChatState() {
-  activeRoomNameEl.textContent = "Aucun salon selectionne";
+  activeRoomNameEl.textContent = "Aucun salon sélectionné";
   activeRoomMetaEl.textContent =
-    "Selectionne un salon pour lire et envoyer des messages.";
+    "Sélectionne un salon pour lire et envoyer des messages.";
   typingIndicatorEl.textContent = "";
   messagesListEl.innerHTML = "";
 }
@@ -83,7 +83,7 @@ function updateSessionUi() {
   const isConnected = Boolean(state.token && state.user);
   sessionEmailEl.textContent = isConnected
     ? `${state.user.username} (${state.user.email})`
-    : "Non connecte";
+    : "Non connecté";
   sessionEmailEl.style.color = isConnected ? state.user.color : "#616161";
 
   logoutButton.disabled = !isConnected;
@@ -175,13 +175,13 @@ function setTypingIndicator(roomId, typingState) {
   }
 
   if (users.length === 1) {
-    typingIndicatorEl.textContent = `${users[0].username} est en train d'ecrire...`;
+    typingIndicatorEl.textContent = `${users[0].username} est en train d'écrire...`;
     return;
   }
 
   typingIndicatorEl.textContent = `${users
     .map((entry) => entry.username)
-    .join(", ")} sont en train d'ecrire...`;
+    .join(", ")} sont en train d'écrire...`;
 }
 
 function renderRooms() {
@@ -191,7 +191,7 @@ function renderRooms() {
     const emptyItem = document.createElement("li");
     emptyItem.className = "room-item muted-item";
     emptyItem.textContent = state.token
-      ? "Aucun salon. Cree le premier."
+      ? "Aucun salon. Crée le premier."
       : "Connecte-toi pour voir tes salons.";
     roomsListEl.appendChild(emptyItem);
     return;
@@ -219,7 +219,7 @@ function createReactionButton(roomId, messageId, emoji, users) {
   button.type = "button";
   button.className = "reaction-chip";
   const usernames = users.map((entry) => entry.username).join(", ");
-  button.title = usernames ? `Par: ${usernames}` : "Aucune reaction";
+  button.title = usernames ? `Par : ${usernames}` : "Aucune réaction";
   button.textContent = `${emoji} ${users.length}`;
   button.addEventListener("click", async () => {
     try {
@@ -650,7 +650,7 @@ inviteForm.addEventListener("submit", async (event) => {
   event.preventDefault();
 
   if (!state.token || !state.activeRoomId) {
-    setStatus("Selectionne un salon avant d'inviter.", true);
+    setStatus("Sélectionne un salon avant d'inviter.", true);
     return;
   }
 
@@ -678,7 +678,7 @@ messageForm.addEventListener("submit", async (event) => {
   event.preventDefault();
 
   if (!state.token || !state.activeRoomId) {
-    setStatus("Selectionne un salon avant d'envoyer un message.", true);
+    setStatus("Sélectionne un salon avant d'envoyer un message.", true);
     return;
   }
 
